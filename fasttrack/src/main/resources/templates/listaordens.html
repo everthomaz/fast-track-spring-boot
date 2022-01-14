@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>ListaOrdens</title>
+<link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+
+	<div class="container">
+
+		<div id="listaDeOrdens">
+			<table class="table table-hover">
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>Name</th>
+						<th>Total</th>
+						<th>Status</th>
+						<th>Description</th>
+					</tr>
+				</thead>
+				<tr th:each="order : ${orders}">
+					<td><span th:text="${order.id}"></span></td>
+					<td><span th:text="${order.name}"></span></td>
+					<td><span th:text="${order.total}"></span></td>
+					<td><span th:text="${order.status}"></span></td>
+					<td><span th:text="${order.description}"></span></td>
+				</tr>
+
+			</table>
+		</div>
+		
+		<hr/>
+
+		<form action="orders" method="post">
+			<div class="form-group">
+				<label for="nome">Name</label> <input type="text"
+					class="form-control" id="name" name="name" placeholder="Name" />
+			</div>
+			<div class="form-group">
+				<label for="email">Total</label> <input type="total"
+					class="form-control" id="total" name="total" placeholder="Total" />
+			</div>
+			<div class="form-group">
+				<label for="status">Status</label> <input
+					type="text" class="form-control" id="status" name="status" placeholder="Status" />
+			</div>
+			<div class="form-group">
+				<label for="description">Description</label> <input
+					type="text" class="form-control" id="description" name="description" placeholder="Description" />
+			</div>
+			<button type="submit" class="btn-success">Enviar Ordem</button>
+		</form>
+
+	</div>
+
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="bootstrap/js/bootstrap.min.js"></script>
+
+</body>
+</html>
