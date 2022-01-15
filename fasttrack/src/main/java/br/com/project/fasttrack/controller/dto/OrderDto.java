@@ -70,7 +70,6 @@ public class OrderDto {
         ObjectMapper mapper = new ObjectMapper();
         try {
             String json = mapper.writeValueAsString(order);
-            System.out.println("ResultingJSONstring = " + json);
             return json;
         } catch (JsonProcessingException e) {
             e.printStackTrace();

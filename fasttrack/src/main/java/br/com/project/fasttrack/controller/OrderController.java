@@ -1,13 +1,17 @@
 package br.com.project.fasttrack.controller;
 
 import java.net.URI;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.validation.Valid;
 
+import org.h2.tools.Server;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -95,7 +99,12 @@ public class OrderController {
 		URI uri = uriBuilder.path("/orders/{id}").buildAndExpand(order.getId()).toUri();
 		OrderDto orderDto = new OrderDto(order);
 		orderDto.setId(order.getId());
-		kafkaSender.sendMessage(orderDto.converterParaJson());
+		try (var dispatcher = new KafkaSender()) {
+			var key = UUID.randomUUID().toString();
+			var value = orderDto.converterParaJson();
+			dispatcher.send("ORDERS", key + " - " + value, value);
+        }
+		//kafkaSender.sendMessage(orderDto.converterParaJson());
 		return ResponseEntity.created(uri).body(new OrderDto(order));
 	}
 	
@@ -121,5 +130,11 @@ public class OrderController {
 		}
 		
 		return ResponseEntity.notFound().build();
+	}
+	
+	@Bean(initMethod = "start", destroyMethod = "stop")
+	public Server inMemoryH2DatabaseaServer() throws SQLException {
+	    return Server.createTcpServer(
+	      "-tcp", "-tcpAllowOthers", "-tcpPort", "9090");
 	}
 }
