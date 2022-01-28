@@ -30,12 +30,12 @@ public class FasttrackConsumerApplication implements CommandLineRunner {
 	}
 	
 	public void run(String... args) throws Exception, InterruptedException, ExecutionException, JsonParseException, JsonParseException, JsonMappingException, JsonProcessingException{
-		var consumer = new FasttrackConsumerApplication();
-        try (var service = new KafkaService(FasttrackConsumerApplication.class.getSimpleName(),
-                "ORDERS",
-                consumer::parse)) {
-            service.run(orderRepository, form);
-        }
+		//var consumer = new FasttrackConsumerApplication();
+        //try (var service = new KafkaService(FasttrackConsumerApplication.class.getSimpleName(),
+        //        "ORDERS",
+        //        consumer::parse)) {
+        //    service.run(orderRepository, form);
+        //}
         
         
 	}

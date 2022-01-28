@@ -1,4 +1,4 @@
-package br.com.project.fasttrack.controller.form;
+package br.com.project.fasttrack.controller.dto;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import br.com.project.fasttrack.model.Order;
 import br.com.project.fasttrack.model.StatusOrder;
 
-public class OrderForm {
+public class OrderRequestDto {
 
 	@NotNull @NotEmpty
 	private String description;

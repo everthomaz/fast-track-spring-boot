@@ -4,7 +4,6 @@ import java.net.URI;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import javax.validation.Valid;
@@ -24,10 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import br.com.project.fasttrack.component.OrderProducer;
 import br.com.project.fasttrack.controller.dto.OrderDto;
+import br.com.project.fasttrack.controller.dto.OrderRequestDto;
 import br.com.project.fasttrack.controller.form.AtualizacaoOrderForm;
-import br.com.project.fasttrack.controller.form.OrderForm;
-import br.com.project.fasttrack.kafka.KafkaSender;
+//import br.com.project.fasttrack.kafka.KafkaSender;
 import br.com.project.fasttrack.model.Order;
 import br.com.project.fasttrack.model.StatusOrder;
 import br.com.project.fasttrack.repository.OrderRepository;
@@ -36,11 +36,17 @@ import br.com.project.fasttrack.repository.OrderRepository;
 @RequestMapping("/orders")
 public class OrderController {
 	
+	private final OrderProducer orderProducer;
+	
 	@Autowired
 	private OrderRepository orderRepository;
 	
-	@Autowired
-	private KafkaSender kafkaSender;
+	//@Autowired
+	//private KafkaSender kafkaSender;
+	
+	public OrderController(OrderProducer orderProducer) {
+        this.orderProducer = orderProducer;
+    }
 	
 	
 	@GetMapping
@@ -92,18 +98,19 @@ public class OrderController {
 	}
 	
 	@PostMapping
-	public ResponseEntity<OrderDto> cadastrar(@RequestBody OrderForm form, UriComponentsBuilder uriBuilder) throws InterruptedException, ExecutionException {
-		Order order = form.converter();
+	public ResponseEntity<OrderDto> cadastrar(@RequestBody OrderRequestDto orderRequest, UriComponentsBuilder uriBuilder) throws InterruptedException, ExecutionException {
+		Order order = orderRequest.converter();
 		orderRepository.save(order);
 		
 		URI uri = uriBuilder.path("/orders/{id}").buildAndExpand(order.getId()).toUri();
 		OrderDto orderDto = new OrderDto(order);
 		orderDto.setId(order.getId());
-		try (var dispatcher = new KafkaSender()) {
-			var key = UUID.randomUUID().toString();
+		
+		//try (var dispatcher = new KafkaSender()) {
+			//var key = UUID.randomUUID().toString();
 			var value = orderDto.converterParaJson();
-			dispatcher.send("ORDERS", key + " - " + value, value);
-        }
+			orderProducer.send(value);
+        //}	
 		//kafkaSender.sendMessage(orderDto.converterParaJson());
 		return ResponseEntity.created(uri).body(new OrderDto(order));
 	}

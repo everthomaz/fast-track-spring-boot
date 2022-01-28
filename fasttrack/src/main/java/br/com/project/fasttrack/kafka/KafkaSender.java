@@ -8,11 +8,12 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
 public class KafkaSender implements Closeable {
-	
+		
 	private final KafkaProducer<String, String> producer;
 
 	public KafkaSender() {
@@ -21,6 +22,7 @@ public class KafkaSender implements Closeable {
 	
 	private static Properties properties() {
 		var properties = new Properties();
+		//properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
 		properties.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "168.138.130.55:29092");
 		properties.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
 		properties.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
